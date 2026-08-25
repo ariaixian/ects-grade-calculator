@@ -6,13 +6,6 @@
 }
 
 @font-face {
-    font-family: 'Plumpelo-Plumpy';
-    src: url('Plumpelo-Plumpy.otf') format('truetype');
-    text-align: center;
-    margin: 23px;
-}
-
-@font-face {
     font-family: 'Pix';
     src: url('FT88-Regular.otf') format('truetype');
     text-align: center;
@@ -21,22 +14,8 @@
 
 
 @font-face {
-    font-family: 'Aperco';
-    src: url('apercu_bold_italic_pro.otf') format('truetype');
-    text-align: center;
-    margin: 23px;
-}
-
-@font-face {
     font-family: 'thin';
     src: url('Plumpelo-Thin.otf') format('truetype');
-    text-align: center;
-    margin: 23px;
-}
-
-@font-face {
-    font-family: 'Luis';
-    src: url('Louise-Regular\ copy.otf') format('truetype');
     text-align: center;
     margin: 23px;
 }
@@ -121,4 +100,3 @@ input{
 #animateMe {
     animation: fadeIn 1.5s ease-out; /* Animation name, duration, and timing function */
 }
-
