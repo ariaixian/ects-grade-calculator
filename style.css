@@ -33,7 +33,7 @@ html { min-height: 100%; background: var(--pink); }
 body {
   min-height: 100vh;
   margin: 0;
-  padding: clamp(24px, 4vw, 52px) 20px 44px;
+  padding: clamp(62px, 6vw, 82px) 20px 52px;
   overflow-x: hidden;
   background: var(--pink);
   text-align: center;
@@ -44,15 +44,17 @@ input { font: inherit; }
 
 .source-link {
   position: absolute;
-  top: 22px;
+  top: 30px;
   right: 26px;
   color: var(--ink);
   font: 1rem "Plumpelo Thin", ui-rounded, sans-serif;
   text-decoration-thickness: 1px;
   text-underline-offset: 4px;
+  line-height: 1.35;
+  padding-top: 0.16em;
 }
 
-.masthead { margin: 0 auto 34px; }
+.masthead { margin: 0 auto 40px; }
 
 .kicker,
 .intro {
@@ -66,7 +68,8 @@ input { font: inherit; }
 
 h1 {
   margin: 0;
-  font: 400 clamp(3.4rem, 7vw, 5.4rem)/0.95 "Plumpelo", ui-rounded, sans-serif;
+  padding: 0.2em 0 0.08em;
+  font: 400 clamp(3.4rem, 7vw, 5.4rem)/1.18 "Plumpelo", ui-rounded, sans-serif;
   letter-spacing: 0.02em;
   text-transform: uppercase;
   white-space: nowrap;
@@ -91,8 +94,8 @@ table {
 }
 
 th {
-  padding: 0 4px 7px;
-  font: 400 clamp(1.2rem, 2.5vw, 1.75rem)/0.9 "Plumpelo", ui-rounded, sans-serif;
+  padding: 0.2em 4px 0.28em;
+  font: 400 clamp(1.2rem, 2.5vw, 1.75rem)/1.25 "Plumpelo", ui-rounded, sans-serif;
   letter-spacing: 0.03em;
   text-align: center;
   text-transform: uppercase;
@@ -139,6 +142,8 @@ button {
   color: var(--ink);
   cursor: pointer;
   font: 400 clamp(1.1rem, 2.2vw, 1.55rem) "Plumpelo Thin", ui-rounded, sans-serif;
+  line-height: 1.35;
+  padding-top: 0.16em;
   text-transform: uppercase;
 }
 
@@ -176,13 +181,16 @@ button:focus-visible { outline: 2px solid var(--focus); outline-offset: 5px; }
 .result h2 {
   margin: 0;
   font: 400 clamp(1.5rem, 3vw, 2.1rem) "Plumpelo Thin", ui-rounded, sans-serif;
+  line-height: 1.35;
+  padding-top: 0.16em;
   text-transform: uppercase;
 }
 
 .result output {
   display: block;
   margin: 5px 0 0;
-  font: 400 clamp(4rem, 10vw, 7rem)/0.9 "Plumpelo", ui-rounded, sans-serif;
+  padding-top: 0.14em;
+  font: 400 clamp(4rem, 10vw, 7rem)/1.12 "Plumpelo", ui-rounded, sans-serif;
 }
 
 .result p,
