@@ -1,315 +1,68 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    
-    
-    <title>Grade Calculator</title>
-    
-    <style>
-         /* Remove arrows from number input */
-         #courseTable input[type="number"] {
-            -moz-appearance: textfield; /* Firefox */
-        }
-
-        #courseTable input[type="number"]::-webkit-inner-spin-button,
-        #courseTable input[type="number"]::-webkit-outer-spin-button {
-            -webkit-appearance: none; /* WebKit browsers */
-            margin: 0; /* Remove the margin */
-        }
-        body {
-            font-family: 'thin', sans-serif;
-            margin: 23px;
-        }
-
-        table {
-            width: 50%;
-            margin-top: -10px;
-            border-collapse: collapse;
-            border-radius: 25px;
-            overflow: hidden;
-        }
-
-        th, td {
-            border: none;
-            padding: 10px;
-            text-align: center;
-            position: relative;
-            font-family: 'thin', sans-serif;
-            font-size: 25px;
-            overflow: hidden;
-            
-        }
-
-        th {
-            background-color: #FBE1E9;
-        }
-
-        label {
-            display: block;
-            margin-bottom: 5px;
-        }
-
-        input {
-            margin-bottom: 10px;
-        }
-    
-
-        button {
-            padding: 16px 16px;
-            background-color: #FBE1E9;
-            color: #000000;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            margin-right: 5px;
-        }
-
-        button:hover {
-            background-color: #FBE1E9;
-            color: #000000;
-        }
-
-        p {
-            margin-top: 20px;
-            font-weight: bold;
-        }
-    </style>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Calculate a credit-weighted course average using ECTS values.">
+  <title>ECTS Grade Calculator</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="script.js" defer></script>
 </head>
 <body>
+  <header>
+    <a class="brand" href="./">ECTS Grade Calculator</a>
+    <a href="https://github.com/ariaixian/ects-grade-calculator">Source</a>
+  </header>
 
-<h1>Grade Calculator</h1>
+  <main>
+    <section class="intro">
+      <p class="eyebrow">Academic planning</p>
+      <h1>Calculate a credit-weighted average.</h1>
+      <p>Add each course, its grade, and its ECTS credits. The calculation runs locally in your browser.</p>
+    </section>
 
-<form id="gradeForm">
-    <table id="courseTable">
-        <tr>
-            <th>Course Name</th>
-            <th>Grade</th>
-            <th>ECTS</th>
-            <th>Delete</th>
-        </tr>
-        <tr>
-            <td><input type="text" placeholder="name" id="courseName1"></td>
-            <td><input type="number" placeholder="grade" id="grade1"></td>
-            <td><input type="number" placeholder="ects" id="ects1"></td>
-            <td><input type="checkbox" id="delete1"></td>
-        </tr>
-        <!-- Additional rows go here -->
-    </table>
+    <section class="calculator" aria-labelledby="courses-heading">
+      <div class="section-heading">
+        <div>
+          <p class="step">01 · Courses</p>
+          <h2 id="courses-heading">Course list</h2>
+        </div>
+        <button id="add-course" class="secondary" type="button">Add course</button>
+      </div>
 
-    <button type="button" onclick="addCourseInput()">+</button>
-    <button type="button" onclick="deleteMarkedRows()">Delete</button>
-    <button type="button" onclick="calculateAverage()">Calculate Average</button>
-</form>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th scope="col">Course</th>
+              <th scope="col">Grade</th>
+              <th scope="col">ECTS</th>
+              <th scope="col"><span class="sr-only">Actions</span></th>
+            </tr>
+          </thead>
+          <tbody id="course-rows"></tbody>
+        </table>
+      </div>
 
-<p id="result"></p>
+      <div class="actions">
+        <button id="calculate" type="button">Calculate average</button>
+        <button id="reset" class="secondary" type="button">Reset</button>
+      </div>
+      <p id="error" class="error" role="alert" aria-live="polite"></p>
+    </section>
 
-<script>
-    function addCourseInput() {
-        var courseTable = document.getElementById("courseTable");
-        var nextCourseNumber = courseTable.rows.length;
+    <section id="result-card" class="result" aria-labelledby="result-heading" hidden>
+      <p class="step">02 · Result</p>
+      <h2 id="result-heading">Weighted average</h2>
+      <output id="average">—</output>
+      <dl>
+        <div><dt>Courses included</dt><dd id="course-count">—</dd></div>
+        <div><dt>Total ECTS</dt><dd id="total-ects">—</dd></div>
+      </dl>
+      <p>The calculator does not convert between institutional grading scales.</p>
+    </section>
+  </main>
 
-        var row = courseTable.insertRow(courseTable.rows.length);
-
-        var cell1 = row.insertCell(0);
-        var cell2 = row.insertCell(1);
-        var cell3 = row.insertCell(2);
-        var cell4 = row.insertCell(3);
-
-        cell1.innerHTML = "<input type='text' placeholder='name' id='courseName" + nextCourseNumber + "'>";
-        cell2.innerHTML = "<input type='number' placeholder='grade' id='grade" + nextCourseNumber + "'>";
-        cell3.innerHTML = "<input type='number' placeholder='ects' id='ects" + nextCourseNumber + "'>";
-        cell4.innerHTML = "<input type='checkbox' id='delete" + nextCourseNumber + "'>";
-    }
-
-    function calculateAverage() {
-        var courseTable = document.getElementById("courseTable");
-        var totalWeightedGrade = 0.0;
-        var totalECTS = 0;
-
-        for (var i = 1; i < courseTable.rows.length; i++) {
-            var grade = parseFloat(document.getElementById("grade" + i).value) || 0;
-            var ects = parseInt(document.getElementById("ects" + i).value) || 0;
-            var deleteCheckbox = document.getElementById("delete" + i);
-
-            if (!deleteCheckbox.checked) {
-                totalWeightedGrade += grade * ects;
-                totalECTS += ects;
-            }
-        }
-
-        var averageGrade = totalWeightedGrade / totalECTS;
-
-        document.getElementById("result").innerHTML = "You will get: " + averageGrade.toFixed(2);
-    }
-
-    function deleteMarkedRows() {
-        var courseTable = document.getElementById("courseTable");
-
-        for (var i = courseTable.rows.length - 1; i > 0; i--) {
-            var deleteCheckbox = document.getElementById("delete" + i);
-
-            if (deleteCheckbox.checked) {
-                courseTable.deleteRow(i);
-            }
-        }
-    }
-</script>
-
-
-
-    
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Time Clock</title>
-    <style>
-        #clock {
-            font-size: 24px;
-            font-family: 'thin', sans-serif;
-        }
-    </style>
-</head>
-<body>
-
-<div id="clock"></div>
-
-<script>
-    // JavaScript code for the clock
-    function updateClock() {
-        var now = new Date();
-        var hours = now.getHours();
-        var minutes = now.getMinutes();
-        
-
-        // Format the time as HH:MM:SS
-        var timeString = formatTime(hours) + ':' + formatTime(minutes);
-
-        // Update the content of the clock element
-        document.getElementById('clock').textContent = timeString;
-
-        // Update the clock every second
-        setTimeout(updateClock, 1000);
-    }
-
-    // Format the time values (add leading zero if needed)
-    function formatTime(timeValue) {
-        return timeValue < 10 ? '0' + timeValue : timeValue;
-    }
-
-    // Start the clock when the page loads
-    window.onload = function () {
-        updateClock();
-    };
-</script>
-
-<!-- Add this style for the stars -->
-<style>
-    .star-container {
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        pointer-events: none;
-    }
-
-    .star {
-        font-size: 200px;
-        position: absolute;
-        animation: starRain 5s reverse;
-    }
-</style>
-
-<!-- Add these functions to handle the star rain effect -->
-<script>
-    function generateStars() {
-        const starContainer = document.createElement("div");
-        starContainer.className = "star-container";
-
-        for (let i = 0; i < 65; i++) {
-            const star = document.createElement("div");
-            star.className = "star";
-            star.innerHTML = "★";
-            star.style.left = Math.random() * window.innerWidth + "px";
-            star.style.animationDuration = Math.random() * 90 + "s";
-            starContainer.appendChild(star);
-        }
-
-        document.body.appendChild(starContainer);
-
-        // Remove stars after animation duration
-        setTimeout(() => {
-            document.body.removeChild(starContainer);
-        }, 20000);
-    }
-
-    function calculateAverage() {
-        var courseTable = document.getElementById("courseTable");
-        var totalWeightedGrade = 0.0;
-        var totalECTS = 0;
-
-        for (var i = 1; i < courseTable.rows.length; i++) {
-            var grade = parseFloat(document.getElementById("grade" + i).value) || 0;
-            var ects = parseInt(document.getElementById("ects" + i).value) || 0;
-            var deleteCheckbox = document.getElementById("delete" + i);
-
-            if (!deleteCheckbox.checked) {
-                totalWeightedGrade += grade * ects;
-                totalECTS += ects;
-            }
-        }
-
-        var averageGrade = totalWeightedGrade / totalECTS;
-
-        document.getElementById("result").innerHTML = "You will get: " + averageGrade.toFixed(2);
-
-        // Call the function to generate stars
-        generateStars();
-    }
-</script>
-<style>
-    .star-container {
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        pointer-events: none;
-    }
-
-    .star {
-        font-size: 20px;
-        position: inherit;
-        animation: starRain 80s linear infinite;
-        z-index: 5; /* Ensure stars appear above other elements */
-        color: #FFFFCC;
-    }
-
-    @keyframes starRain {
-        to {
-            transform: translateY(270vh);
-        }
-    }
-</style>
-
-
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.4.0/jspdf.umd.min.js"></script>
-
+  <footer>ECTS-weighted calculation. No account. No uploaded course data.</footer>
 </body>
 </html>
-<link rel="stylesheet" href="style.css">
-
-<title>Colored Page</title>
-    <style>
-        body {
-            background-color: #FBE1E9; /* Set your desired background color */
-            /* You can use color names, hex codes, RGB values, etc. */
-        }
-    </style>
-
-    
-

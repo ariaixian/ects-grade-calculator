@@ -1,0 +1,8 @@
+{
+  "name": "ects-grade-calculator",
+  "version": "1.0.0",
+  "private": true,
+  "description": "A browser-based ECTS-weighted grade calculator.",
+  "engines": { "node": ">=18" },
+  "scripts": { "test": "node --test" }
+}
