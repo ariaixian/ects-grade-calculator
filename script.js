@@ -32,58 +32,136 @@ if (typeof document !== 'undefined') {
     const rows = document.querySelector('#course-rows');
     const resultCard = document.querySelector('#result-card');
     const errorOutput = document.querySelector('#error');
+    const starField = document.querySelector('#star-field');
     let rowId = 0;
+
+    function makeInput({ label, type, placeholder, value = '', step, min }) {
+      const input = document.createElement('input');
+      input.setAttribute('aria-label', label);
+      input.type = type;
+      input.placeholder = placeholder;
+      input.value = value;
+      if (step) input.step = step;
+      if (min) input.min = min;
+      return input;
+    }
 
     function addCourse(values = {}) {
       rowId += 1;
       const row = document.createElement('tr');
-      row.dataset.rowId = rowId;
-      row.innerHTML = `
-        <td><input aria-label="Course name" type="text" value="${values.name || ''}" placeholder="e.g. Structural Biology"></td>
-        <td><input aria-label="Grade" type="number" step="any" value="${values.grade || ''}" placeholder="1.7"></td>
-        <td><input aria-label="ECTS credits" type="number" min="0.1" step="0.1" value="${values.credits || ''}" placeholder="6"></td>
-        <td><button class="remove-course" type="button" aria-label="Remove course">×</button></td>
-      `;
-      row.querySelector('.remove-course').addEventListener('click', () => {
-        row.remove();
-        if (rows.children.length === 0) addCourse();
-      });
+      row.dataset.rowId = String(rowId);
+
+      const nameCell = row.insertCell();
+      nameCell.appendChild(makeInput({
+        label: 'Course name',
+        type: 'text',
+        placeholder: 'name',
+        value: values.name || '',
+      }));
+
+      const gradeCell = row.insertCell();
+      gradeCell.appendChild(makeInput({
+        label: 'Grade',
+        type: 'number',
+        placeholder: 'grade',
+        value: values.grade || '',
+        step: 'any',
+      }));
+
+      const creditsCell = row.insertCell();
+      creditsCell.appendChild(makeInput({
+        label: 'ECTS credits',
+        type: 'number',
+        placeholder: 'ects',
+        value: values.credits || '',
+        step: '0.1',
+        min: '0.1',
+      }));
+
+      const selectCell = row.insertCell();
+      const checkbox = document.createElement('input');
+      checkbox.type = 'checkbox';
+      checkbox.setAttribute('aria-label', `Select course ${rowId} for deletion`);
+      selectCell.appendChild(checkbox);
       rows.appendChild(row);
     }
 
     function readCourses() {
       return [...rows.querySelectorAll('tr')]
+        .filter((row) => !row.querySelector('input[type="checkbox"]').checked)
         .map((row) => {
-          const inputs = row.querySelectorAll('input');
-          return { name: inputs[0].value.trim(), grade: inputs[1].value, credits: inputs[2].value };
+          const name = row.querySelector('input[type="text"]').value.trim();
+          const numbers = row.querySelectorAll('input[type="number"]');
+          return { name, grade: numbers[0].value, credits: numbers[1].value };
         })
         .filter((course) => course.name || course.grade || course.credits);
     }
 
+    function celebrate() {
+      starField.replaceChildren();
+      if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
+      for (let index = 0; index < 36; index += 1) {
+        const star = document.createElement('span');
+        star.className = 'star';
+        star.textContent = '★';
+        star.style.left = `${Math.random() * 100}%`;
+        star.style.setProperty('--star-size', `${12 + Math.random() * 18}px`);
+        star.style.setProperty('--star-speed', `${3 + Math.random() * 4}s`);
+        star.style.animationDelay = `${Math.random() * 1.5}s`;
+        starField.appendChild(star);
+      }
+
+      window.setTimeout(() => starField.replaceChildren(), 8500);
+    }
+
+    function updateClock() {
+      const now = new Date();
+      const hours = String(now.getHours()).padStart(2, '0');
+      const minutes = String(now.getMinutes()).padStart(2, '0');
+      document.querySelector('#clock').textContent = `${hours}✶${minutes}`;
+    }
+
     document.querySelector('#add-course').addEventListener('click', () => addCourse());
+
+    document.querySelector('#delete-selected').addEventListener('click', () => {
+      const selected = [...rows.querySelectorAll('tr')]
+        .filter((row) => row.querySelector('input[type="checkbox"]').checked);
+      selected.forEach((row) => row.remove());
+      if (rows.children.length === 0) addCourse();
+      resultCard.hidden = true;
+      errorOutput.textContent = selected.length ? '' : 'Select a course row to delete.';
+    });
+
     document.querySelector('#calculate').addEventListener('click', () => {
       errorOutput.textContent = '';
       try {
         const courses = readCourses();
         const result = GradeCalculator.weightedAverage(courses);
         document.querySelector('#average').textContent = result.average.toFixed(2);
-        document.querySelector('#course-count').textContent = courses.length;
+        document.querySelector('#course-count').textContent = String(courses.length);
         document.querySelector('#total-ects').textContent = result.totalCredits.toFixed(1);
         resultCard.hidden = false;
+        celebrate();
       } catch (error) {
         resultCard.hidden = true;
-        errorOutput.textContent = error instanceof Error ? error.message : 'Unable to calculate the average.';
+        errorOutput.textContent = error instanceof Error
+          ? error.message
+          : 'Unable to calculate the average.';
       }
     });
+
+    document.querySelector('#print').addEventListener('click', () => window.print());
     document.querySelector('#reset').addEventListener('click', () => {
-      rows.innerHTML = '';
+      rows.replaceChildren();
+      starField.replaceChildren();
       resultCard.hidden = true;
       errorOutput.textContent = '';
       addCourse();
     });
 
     addCourse();
-    addCourse();
-    addCourse();
+    updateClock();
+    window.setInterval(updateClock, 1000);
   });
 }

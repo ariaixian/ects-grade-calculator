@@ -5,64 +5,60 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="description" content="Calculate a credit-weighted course average using ECTS values.">
   <title>ECTS Grade Calculator</title>
-  <link rel="stylesheet" href="style.css">
-  <script src="script.js" defer></script>
+  <link rel="stylesheet" href="style.css?v=3">
+  <script src="script.js?v=3" defer></script>
 </head>
 <body>
-  <header>
-    <a class="brand" href="./">ECTS Grade Calculator</a>
-    <a href="https://github.com/ariaixian/ects-grade-calculator">Source</a>
+  <a class="source-link" href="https://github.com/ariaixian/ects-grade-calculator">Source</a>
+
+  <header class="masthead">
+    <p class="kicker">ECTS-weighted study tool</p>
+    <h1>Grade Calculator</h1>
+    <p class="intro">Add each course, its grade, and its credits.</p>
   </header>
 
   <main>
-    <section class="intro">
-      <p class="eyebrow">Academic planning</p>
-      <h1>Calculate a credit-weighted average.</h1>
-      <p>Add each course, its grade, and its ECTS credits. The calculation runs locally in your browser.</p>
-    </section>
-
     <section class="calculator" aria-labelledby="courses-heading">
-      <div class="section-heading">
-        <div>
-          <p class="step">01 · Courses</p>
-          <h2 id="courses-heading">Course list</h2>
-        </div>
-        <button id="add-course" class="secondary" type="button">Add course</button>
-      </div>
-
+      <h2 id="courses-heading" class="sr-only">Courses</h2>
       <div class="table-wrap">
         <table>
           <thead>
             <tr>
-              <th scope="col">Course</th>
+              <th scope="col">Course name</th>
               <th scope="col">Grade</th>
               <th scope="col">ECTS</th>
-              <th scope="col"><span class="sr-only">Actions</span></th>
+              <th scope="col">Delete</th>
             </tr>
           </thead>
           <tbody id="course-rows"></tbody>
         </table>
       </div>
 
-      <div class="actions">
-        <button id="calculate" type="button">Calculate average</button>
-        <button id="reset" class="secondary" type="button">Reset</button>
+      <div class="actions" aria-label="Course actions">
+        <button id="add-course" type="button">＋ Add course</button>
+        <span aria-hidden="true">✶</span>
+        <button id="delete-selected" type="button">Delete selected</button>
       </div>
+
+      <button id="calculate" class="calculate" type="button">Calculate average</button>
       <p id="error" class="error" role="alert" aria-live="polite"></p>
     </section>
 
     <section id="result-card" class="result" aria-labelledby="result-heading" hidden>
-      <p class="step">02 · Result</p>
-      <h2 id="result-heading">Weighted average</h2>
+      <h2 id="result-heading">You will get</h2>
       <output id="average">—</output>
-      <dl>
-        <div><dt>Courses included</dt><dd id="course-count">—</dd></div>
-        <div><dt>Total ECTS</dt><dd id="total-ects">—</dd></div>
-      </dl>
-      <p>The calculator does not convert between institutional grading scales.</p>
+      <p><span id="course-count">—</span> courses · <span id="total-ects">—</span> ECTS</p>
     </section>
+
+    <div class="utility-actions">
+      <button id="print" type="button">Print / save PDF</button>
+      <button id="reset" type="button">Reset</button>
+    </div>
+
+    <time id="clock" aria-label="Current time">--✶--</time>
+    <p class="privacy-note">Calculated locally. Your course data never leaves this page.</p>
   </main>
 
-  <footer>ECTS-weighted calculation. No account. No uploaded course data.</footer>
+  <div id="star-field" aria-hidden="true"></div>
 </body>
 </html>

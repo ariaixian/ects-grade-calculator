@@ -17,6 +17,9 @@ The application reports the weighted average, total credits, and number of
 courses included. Blank rows are ignored. It does not convert between grading
 systems or apply institution-specific rounding rules.
 
+Rows can be marked for deletion, and a completed calculation can be printed or
+saved as a PDF through the browser's print dialog.
+
 ## Calculation
 
 For grades `gᵢ` and credit values `cᵢ`:
@@ -42,6 +45,15 @@ npm test
 All course data remains in the page and is discarded when the page is closed
 or reset.
 
+## Design
+
+The interface preserves the original calculator's pale-pink canvas, custom
+bubble and pixel typography, centered worksheet, star motif, and live clock.
+The implementation was rebuilt as valid, responsive HTML with bounded motion,
+keyboard-visible controls, and a tested calculation core.
+
 ## License
 
-Released under the [MIT License](LICENSE).
+Application code is released under the [MIT License](LICENSE). The custom font
+files in `assets/fonts` are original design assets and are not covered by the
+software license.
